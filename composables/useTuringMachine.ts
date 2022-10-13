@@ -2,6 +2,7 @@ export type TuringMachine = {
     pointer: number,
     state: string,
     tape: Array<string>,
+    length: number,
     states: Array<string>,
     alphabet: Array<string>,
     empty: string,
@@ -31,7 +32,8 @@ export const useTuringMachine = () => {
     const machine = ref<TuringMachine>({
         pointer: 0,
         state: 'init',
-        tape: ['1', '0', '0', '1', '1', '#', '#', '#', '#', '#'],
+        tape: [],
+        length: 20,
         states: ['init', 'q'],
         alphabet: ['1', '0'],
         empty: '#',
@@ -109,11 +111,41 @@ export const useTuringMachine = () => {
             machine.value.states = [...machine.value.states.filter(s => s !== state)];
     }
 
+    const addCharacter = (character: string) => {
+        if (!machine.value.alphabet.includes(character))
+            machine.value.alphabet.push(character);
+    }
+
+    const removeCharacter = (character: string) => {
+        if (machine.value.alphabet.includes(character))
+            machine.value.alphabet = [...machine.value.alphabet.filter(c => c !== character)];
+    }
+
     const setPointer = (pointer: number) => {
         if ((0 <= pointer) && (pointer < machine.value.tape.length)) {
             machine.value.pointer = pointer;
         }
     }
+
+    const setWord = (word: string) => {
+        if (word.length > (machine.value.length - 1)) return;
+        const wordList = word.split('');
+        for (const character of wordList) {
+            if (!(machine.value.alphabet.includes(character))) return;
+        }
+        machine.value.tape = Array(machine.value.length).fill(machine.value.empty);
+        for (const i in wordList) {
+            machine.value.tape[i] = wordList[i];
+        }
+    }
+
+    const setState = (state: string) => {
+        if (machine.value.states.includes(state)) {
+            machine.value.state = state;
+        }
+    }
+
+    setWord('1011101');
 
     return { 
         machine: readonly(machine),
@@ -122,7 +154,11 @@ export const useTuringMachine = () => {
         step,
         addState,
         removeState,
-        setPointer
+        setPointer,
+        addCharacter,
+        removeCharacter,
+        setWord,
+        setState
     };
 
 };

@@ -5,7 +5,8 @@
     const props = defineProps<{
         machine: Readonly<TuringMachine>,
         addState: (state: string) => void,
-        removeState: (state: string) => void
+        removeState: (state: string) => void,
+        setState: (state: string) => void
     }>();
 
     const newState = ref('');
@@ -29,6 +30,7 @@
         <div v-for="state in props.machine.states">
             {{  state  }}
             <button @click="props.removeState(state)">🗑️</button>
+            <button @click="props.setState(state)">Set</button>
         </div>
         <form @submit.prevent="submitState">
             <input type="text" v-model="newState">
